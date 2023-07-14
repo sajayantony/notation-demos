@@ -1,0 +1,4 @@
+*.csr
+*.cnf
+*.crt
+*.key
