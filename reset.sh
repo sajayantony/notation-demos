@@ -25,4 +25,6 @@
 . $(dirname ${BASH_SOURCE})/util.sh
 
 desc "Stop and remove the demo registry"
-run "docker rm -f demo_registry"
+run "docker rm -f notation-registry"
+
+run "docker network rm notation-network"

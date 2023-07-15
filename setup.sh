@@ -24,7 +24,17 @@
 
 . $(dirname ${BASH_SOURCE})/util.sh
 
+desc "Create docker network"
+run "docker network create notation-network"
+
+
 desc "Setup a demo registry on port 5000"
 run "docker run \\
-    -d -p 5000:5000 --name 'demo_registry' \\
+    --network=notation-network \\
+    -d -p 5000:5000 --name 'notation-registry' \\
     ghcr.io/project-zot/zot-minimal-linux-amd64:latest"
+
+
+run "docker run --rm -it --network=notation-network \\
+    -v $(pwd):/notation-demos notation-demo"
+
