@@ -1,4 +1,4 @@
-# Using local keys with Notation
+# Using local keys with notation 
 
 ## OpenSSL Certificate Creation Guide
 
@@ -24,7 +24,7 @@ Run the following command to output the details of the certificate.
 openssl x509 -in certificate.crt -text -noout
 ```
 
-## Use this key with Notation
+## Configure notation to use the local key
 
 Notation does not allow using local keys by default and requires a plugin. 
 For debugging we can configure notation to use this key by adding 
