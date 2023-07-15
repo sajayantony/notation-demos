@@ -31,7 +31,7 @@ desc "Lets push the file to the registry"
 run "oras push localhost:5000/hello:latest \\
     --artifact-type application/example hello.txt"
 
-desc "Let's generate a test certs"
+desc "Let's generate a test cert"
 run "notation cert generate-test --default 'wabbit-networks.io'"
 
 desc "Let's view the keys"
@@ -40,11 +40,14 @@ run "notation cert ls"
 
 export IMAGE=localhost:5000/hello@$(oras manifest get --descriptor localhost:5000/hello:latest | jq -r .digest)
 
+run 'export IMAGE=localhost:5000/hello@$(oras manifest get --descriptor localhost:5000/hello:latest | jq -r .digest)'
+
+
 desc "Let's sign the image: $IMAGE"
-run "notation sign $IMAGE"
+run "notation sign \$IMAGE"
 
 desc "Let's view the signature"
-run "notation ls $IMAGE"
+run "notation ls \$IMAGE"
 
 desc "Let's inspect the signature"
-run "notation inspect $IMAGE"
+run "notation inspect \$IMAGE"
