@@ -21,7 +21,7 @@ openssl req -x509 -sha256 -nodes -newkey rsa:2048 \
 Run the following command to output the details of the certificate.
 
 ```bash
-openssl x509 -in certificate.crt -text -noout
+openssl x509 -in test.crt -text -noout
 ```
 
 ## Configure notation to use the local key
