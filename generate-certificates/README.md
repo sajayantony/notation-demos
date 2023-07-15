@@ -2,61 +2,17 @@
 
 This guide shows how to create a self-signed certificate with `digitalSignature` as key usage and `codeSigning` as extended key usage using OpenSSL.
 
-## 1. Generate a Private Key
-
-Run the following command to generate a private key using the RSA algorithm.
-
 ```bash
-openssl genpkey -algorithm RSA -out private.key
+name=test
+openssl req -x509 -sha256 -nodes -newkey rsa:2048 \
+    -keyout $name.key -out $name.crt -days 365 \
+    -subj "/C=US/ST=WA/L=Seattle/O=Notary/CN=$name" \
+    -addext "basicConstraints=CA:false" \
+    -addext "keyUsage=critical,digitalSignature" \ 
+    -addext "extendedKeyUsage=codeSigning"
 ```
 
-## 2. Prepare Configuration File
-
-Create a new file named `openssl.cnf` with the content below. This configuration file specifies the details of the certificate request.
-
-```bash
-cat > openssl.cnf << "EOF"
-[ req ]
-default_bits        = 2048
-default_keyfile     = private.key
-distinguished_name  = req_distinguished_name
-req_extensions     = req_ext
-
-[ req_distinguished_name ]
-countryName                 = Country Name (2 letter code)
-countryName_default         = US
-stateOrProvinceName         = State or Province Name (full name)
-stateOrProvinceName_default = Washington 
-localityName                = Locality Name (eg, city)
-localityName_default        = Seattle
-organizationName            = My Organization (eg, company)
-organizationName_default    = My Company
-commonName                  = Common Name (eg, YOUR name)
-commonName_max              = 64
-
-[ req_ext ]
-keyUsage=critical,digitalSignature
-extendedKeyUsage=critical,codeSigning
-EOF
-```
-
-## 3. Generate a Certificate Signing Request
-
-Run the following command to generate a Certificate Signing Request (CSR) based on the private key and the configuration file.
-
-```bash
-openssl req -new -key private.key -out certificate.csr -config openssl.cnf
-```
-
-## 4. Generate a Self-Signed Certificate
-
-Run the following command to generate a self-signed certificate from the CSR, the private key, and the configuration file.
-
-```bash
-openssl x509 -req -days 365 -in certificate.csr -signkey private.key -out certificate.crt -extensions req_ext -extfile openssl.cnf
-```
-
-## 5. Output the Details of the Certificate
+## Output the Details of the Certificate
 
 Run the following command to output the details of the certificate.
 
@@ -64,4 +20,20 @@ Run the following command to output the details of the certificate.
 openssl x509 -in certificate.crt -text -noout
 ```
 
-Please replace the distinguished_name placeholders in the `openssl.cnf` file with your actual information.
+## Use this key to sign your OCI artifact or image
+
+Notation does not allow using local keys by default and requires a plugin. 
+For debugging we can configure notation to use this key by adding the following to the `~/.config/notation/signingKey.json` file.
+
+```json
+{
+    "default": "test-local-openssl",
+    "keys": [
+        {
+            "name": "test-local-openssl",
+            "keyPath": "/notation-demos/local-key-cert/private.key",
+            "certPath": "/notation-demos/local-key-cert/certificate.crt"
+        }
+    ]
+}
+```
