@@ -54,7 +54,7 @@ run "cat <<EOF > ./trustpolicy.json
     \"trustPolicies\": [
         {
             \"name\": \"notation-demos-images\",
-            \"registryScopes\": [ \"*\" ],
+            \"registryScopes\": [ \"localhost:5000/hello\" ],
             \"signatureVerification\": {
                 \"level\" : \"strict\" 
             },
@@ -70,8 +70,8 @@ EOF"
 desc "Let's sign the image: $IMAGE"
 run "notation sign \$IMAGE"
 
-desc "Let's view the signature"
-run "notation ls \$IMAGE"
+desc "Let's import the trust policy" 
+run "notation policy import ./trustpolicy.json"
 
-desc "Let's inspect the signature"
-run "notation inspect \$IMAGE"
+desc "Let's verify the image"
+run "notation verify \$IMAGE"
