@@ -42,6 +42,31 @@ export IMAGE=localhost:5000/hello@$(oras manifest get --descriptor localhost:500
 
 run 'export IMAGE=localhost:5000/hello@$(oras manifest get --descriptor localhost:5000/hello:latest | jq -r .digest)'
 
+desc "The images does not have a signature" 
+desc "Let's see what happens if try to verify it"
+
+run "notation verify \$IMAGE"
+
+desc "Let's first add a trust policy"
+run "cat <<EOF > ./trustpolicy.json
+{
+    \"version\": \"1.0\",
+    \"trustPolicies\": [
+        {
+            \"name\": \"notation-demos-images\",
+            \"registryScopes\": [ \"*\" ],
+            \"signatureVerification\": {
+                \"level\" : \"strict\" 
+            },
+            \"trustStores\": [ \"ca:notation-demos.io\" ],
+            \"trustedIdentities\": [
+                \"*\"
+            ]
+        }
+    ]
+}
+EOF"
+
 desc "Let's sign the image: $IMAGE"
 run "notation sign \$IMAGE"
 
